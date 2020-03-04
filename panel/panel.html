@@ -1,0 +1,12 @@
+<div>
+  <h2 v-text="$t('title')"></h2>
+  <ui-section>
+    <div class="header" v-text="$t('hooks')"></div>
+    <ui-prop name="build-start" @change="onPropChange" type="string" data-key="build-start" :value="hooks['build-start']"></ui-prop>
+    <ui-prop name="build-finish" @change="onPropChange" type="string" data-key="build-finish" :value="hooks['build-finish']"></ui-prop>
+    <ui-button @confirm="saveSettings">
+      {{$t('apply')}}
+      <i class="icon-ok" v-if="settingsSaved"></i>
+    </ui-button>
+  </ui-section>
+</div>
