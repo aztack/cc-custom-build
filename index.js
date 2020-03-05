@@ -16,6 +16,8 @@ function makeHook (name) {
         const result = fn(options);
         if (result && typeof result.then === 'function') {
           result.then(() => callback());
+        } else {
+          callback();
         }
       } else {
         Editor.error(`Can not find hook named ${name}`);
