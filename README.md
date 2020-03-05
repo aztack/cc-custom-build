@@ -19,6 +19,8 @@ git clone https://github.com/aztack/cc-custom-build.git
 module.exports = function(options /* see above cocos docs*/) {
   Editor.log(`Build start with options:`)
   Editor.warn(options);
+  // return a promise if you need to do something asynchronous
+  //return new Promise((resolve, reject) => {resolve()})
 }
 ```
 

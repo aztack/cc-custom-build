@@ -13,13 +13,16 @@ function makeHook (name) {
         const fullpath = path.resolve(root, script);
         Editor.log(`Execute custom build script: ${fullpath}`);
         const fn = eval(fs.readFileSync(fullpath).toString());
-        fn(options);
+        const result = fn(options);
+        if (result && typeof result.then === 'function') {
+          result.then(() => callback());
+        }
       } else {
         Editor.error(`Can not find hook named ${name}`);
+        callback();
       }
     } catch(e) {
       Editor.error(`Custom build failed: ${e.toString()}, ${e.message}`);
-    } finally {
       callback();
     }
   }
