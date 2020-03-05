@@ -1,4 +1,5 @@
-const { read, pkgName } = require_('utils.js');
+const { read, pkgName, writeConfig, buildConfigFile } = require_('utils.js');
+const $path = require('path');
 
 const vm = (el) => {
   return new Vue({
@@ -32,6 +33,7 @@ const vm = (el) => {
         const fields = Object.keys(this.hooks);
         fields.forEach(f => localStorage.setItem(f, this.hooks[f]))
         this.settingsSaved = true;
+        writeConfig($path.resolve(Editor.url(`db://assets`), `../settings/${buildConfigFile}`), this.hooks);
         Editor.Ipc.sendToMain(`cc-custom-build:save`, [this.hooks]);
         setTimeout(() => {
           self.settingsSaved = false;

@@ -33,6 +33,16 @@ module.exports = {
     Editor.log(`Loading Package "cc-custom-build" from ${__dirname}`);
     Editor.Builder.on('build-start', onBuildStart);
     Editor.Builder.on('build-finished', onBuildFinish);
+    if(process.argv.indexOf('--build') > 0) {
+      Editor.log(`Building from command line`)
+      Editor.log(`Loading custom build config`);
+      utils.readConfig().then((config) => {
+        $hooks = config;
+        Editor.log(`Custom build config: ${JSON.stringify(config)}`);
+      }).catch((e) => {
+        Editor.error(`Did not find custom build config, please click apply button on custom build panel`, e);
+      });
+    }
   },
   unload() {
     Editor.log('Unloading Package "cc-custom-build"');
