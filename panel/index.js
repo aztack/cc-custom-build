@@ -1,4 +1,4 @@
-const { read, pkgName, writeConfig, buildConfigFile } = require_('utils.js');
+const { read, readConfig, writeConfig, buildConfigFile } = require_('utils.js');
 const $path = require('path');
 
 const vm = (el) => {
@@ -10,19 +10,19 @@ const vm = (el) => {
       return {
         settingsSaved: false,
         hooks: {
-          ['build-start']: 'bin/build-start.js',
-          ['build-finish']: 'bin/build-finish.js'
+          ['build-start']: '../bin/build-start.js',
+          ['build-finish']: '../bin/build-finish.js'
         }
-
       }
     },
     created() {
       window.cccbuild = this;
     },
     compiled(){
-      const fields = Object.keys(this.hooks);
-      fields.forEach(f => this.hooks[f] = localStorage.getItem(f));
-      Editor.Ipc.sendToMain(`cc-custom-build:save`, [this.hooks]);
+      readConfig($path.resolve(Editor.url(`db://assets`), `../settings/${buildConfigFile}`)).then(config => {
+        this.hooks = config;
+        Editor.Ipc.sendToMain(`cc-custom-build:save`, [this.hooks]);
+      });
     },
     methods: {
       $t(key) {
@@ -30,14 +30,13 @@ const vm = (el) => {
       },
       saveSettings() {
         const self = this;
-        const fields = Object.keys(this.hooks);
-        fields.forEach(f => localStorage.setItem(f, this.hooks[f]))
         this.settingsSaved = true;
-        writeConfig($path.resolve(Editor.url(`db://assets`), `../settings/${buildConfigFile}`), this.hooks);
-        Editor.Ipc.sendToMain(`cc-custom-build:save`, [this.hooks]);
-        setTimeout(() => {
-          self.settingsSaved = false;
-        }, 1000);
+        writeConfig($path.resolve(Editor.url(`db://assets`), `../settings/${buildConfigFile}`), this.hooks).then(() => {
+          Editor.Ipc.sendToMain(`cc-custom-build:save`, [this.hooks]);
+          setTimeout(() => {
+            self.settingsSaved = false;
+          }, 1000);
+        });
       },
       onPropChange(e) {
         const key = e.target.dataset.key;
